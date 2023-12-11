@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="caro.controllers.BoardController">
+   <children>
+      <HBox>
+         <children>
+            <GridPane fx:id="gridBoard" gridLinesVisible="true">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="40.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="40.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="40.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="40.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="40.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="40.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="40.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="40.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="40.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="40.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="40.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="40.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="40.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="40.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="40.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+            </GridPane>
+            <Pane fx:id="boardInformation" prefWidth="400.0">
+               <children>
+                  <VBox alignment="TOP_CENTER" prefWidth="400.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Game Caro">
+                           <font>
+                              <Font size="48.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="50.0" />
+                           </VBox.margin>
+                        </Text>
+                        <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                                 <children>
+                                    <Text fx:id="myName" strokeType="OUTSIDE" strokeWidth="0.0" text="UserName">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Text>
+                                    <Text fill="#e00f07" strokeType="OUTSIDE" strokeWidth="0.0" text="X">
+                                       <font>
+                                          <Font size="36.0" />
+                                       </font>
+                                    </Text>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="AI">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Text>
+                                    <Text fill="#1b8d30" strokeType="OUTSIDE" strokeWidth="0.0" text="O">
+                                       <font>
+                                          <Font size="36.0" />
+                                       </font>
+                                    </Text>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </Pane>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

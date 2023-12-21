@@ -1,11 +1,11 @@
 package caro.controllers;
 
 import caro.player.Player;
-import client.Client;
+import caro.Client;
 
 public abstract class BaseController {
 	private Player player;
-	private Client client;
+	private caro.Client client;
 	
 	public Player getPlayer() {
 		return player;

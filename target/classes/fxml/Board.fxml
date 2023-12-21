@@ -97,6 +97,15 @@
                         </HBox>
                      </children>
                   </VBox>
+                  <HBox alignment="CENTER" layoutX="37.0" layoutY="214.0" prefHeight="48.0" prefWidth="326.0">
+                     <children>
+                        <Text fx:id="turnText" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </HBox>
                </children>
             </Pane>
          </children>

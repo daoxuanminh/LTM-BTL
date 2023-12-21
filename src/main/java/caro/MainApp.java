@@ -1,62 +1,84 @@
 package caro;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
+import caro.controllers.LoginController;
 import caro.player.Player;
 
-
 public class MainApp extends Application {
-    private static Stage stage;
-    private Player player;
-    public static boolean isStartGame;
-    public final static String SERVER_IP = "127.0.0.1";
-    public final static int SERVER_PORT = 7;
+	private Client client;
+	private Player player;
+    private Socket socket;
+    private BufferedReader reader;
+    private BufferedWriter writer;
+
+    private TextArea chatArea;
+    private TextField messageField;
     
-    public MainApp() {
-		super();
-	}
-
-	public MainApp(Player player) {
-		super();
-		this.player = player;
-	}
-
-	@Override
-    public void start(@SuppressWarnings("exports") Stage s) throws IOException {
-        stage=s;
-        setRoot("Login","");
+    
+    @Override
+    public void start(Stage primaryStage) {
+    	try {
+			socket = new Socket("127.0.0.1", 7777);
+			System.out.println("socket: "+socket);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        // Kết nối đến server
+        connectToServer(primaryStage);
+        // Tạo giao diện người dùng
+//    	player = new Player("daominh", "daominh", "a");
+//    	Scene scene = setRootGui("Login", primaryStage);
+    	try {
+			FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/fxml/"+ "Login" + ".fxml"));
+            Parent homeParentView = loader.load();
+            Scene scene = new Scene(homeParentView);
+			LoginController loginController = loader.getController();
+	        client.setLoginController(loginController);
+	        loginController.setup(client);
+	        loginController.setPrimaryStage(primaryStage);
+	        loader.setController(loginController);
+	        primaryStage.setScene(scene);
+	        primaryStage.show();
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e);
+			System.out.println(e);
+		}
+		
     }
 
-    public void setRoot(String fxml) throws IOException {
-        setRoot(fxml,stage.getTitle());
+    private void connectToServer(Stage stage) {
+    	client = new Client(socket);
+    	client.setPrimaryStage(stage);
+        new Thread(client).start();
     }
 
-    public void setRoot(String fxml, String title) throws IOException {
-        Scene scene = new Scene(loadFXML(fxml));
-        stage.setTitle(title);
-        stage.setScene(scene);
-        stage.show();
+    @Override
+    public void stop() throws Exception {
+        // Đóng kết nối khi ứng dụng đóng
+        if (socket != null && !socket.isClosed()) {
+            socket.close();
+        }
+        super.stop();
     }
 
-    private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/fxml/"+fxml + ".fxml"));
-        return fxmlLoader.load();
-    }
-
-
-    public static void main(String[] args) throws InterruptedException, IOException {
-    	
+    public static void main(String[] args) {
         launch(args);
     }
-
 }

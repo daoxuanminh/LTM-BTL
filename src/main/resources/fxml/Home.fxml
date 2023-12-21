@@ -44,8 +44,8 @@
                   </ScrollPane>
                   <HBox>
                      <children>
-                        <TextField fx:id="inputMessagesTextField" onDragEntered="#sendMessage" onKeyPressed="#sendMessEnterKey" prefHeight="25.0" prefWidth="304.0" />
-                        <Button mnemonicParsing="false" onAction="#sendMessage" prefHeight="25.0" prefWidth="90.0" text="Gửi" />
+                        <TextField fx:id="inputMessagesTextField" onDragEntered="#sendMessageGlobal" onKeyPressed="#sendMessEnterKey" prefHeight="25.0" prefWidth="304.0" />
+                        <Button mnemonicParsing="false" onAction="#sendMessageGlobal" prefHeight="25.0" prefWidth="90.0" text="Gửi" />
                      </children>
                      <VBox.margin>
                         <Insets top="10.0" />
@@ -58,7 +58,7 @@
             </VBox>
             <VBox layoutX="14.0" layoutY="29.0" prefWidth="223.0" spacing="10.0">
                <children>
-                  <Button fx:id="btn_play" mnemonicParsing="false" prefHeight="25.0" prefWidth="226.0" text="Chơi ngay">
+                  <Button fx:id="btn_play_now" mnemonicParsing="false" prefHeight="25.0" prefWidth="226.0" text="Chơi ngay">
                      <padding>
                         <Insets bottom="6.0" top="6.0" />
                      </padding></Button>

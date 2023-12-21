@@ -43,7 +43,7 @@
                      </VBox.margin>
                   </PasswordField>
                   <Text fx:id="warningField" fill="#e85911" strokeType="OUTSIDE" strokeWidth="0.0" text="Sai mật khẩu hoặc email !" visible="false" wrappingWidth="186.10546875" />
-                  <Button fx:id="loginBtn" mnemonicParsing="false" onAction="#requestLogin" onMouseClicked="#requestLogin" prefHeight="30.0" prefWidth="206.0" styleClass="btn_primary" text="Đăng nhập">
+                  <Button fx:id="loginBtn" mnemonicParsing="false" onAction="#sendLoginMessage" onMouseClicked="#sendLoginMessage" prefHeight="30.0" prefWidth="206.0" styleClass="btn_primary" text="Đăng nhập">
                      <VBox.margin>
                         <Insets top="10.0" />
                      </VBox.margin>

@@ -1,5 +1,6 @@
 package caro.controllers;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import java.io.IOException;
 import java.net.URL;
@@ -21,18 +22,23 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import caro.MainApp;
 import caro.player.Player;
-import client.Client;
+import caro.Client;
 
 public class LoginController implements Initializable{
 
 	private Client client;
-	private Player currentPlayer=null;
-	
-	public LoginController() throws UnknownHostException, IOException {
-		client = new Client();
+	private Player player=null;
+	private Stage primaryStage;
+
+    public Stage getPrimaryStage() {
+		return primaryStage;
 	}
 
-    @FXML
+	public void setPrimaryStage(Stage primaryStage) {
+		this.primaryStage = primaryStage;
+	}
+
+	@FXML
     private Button loginBtn;
 
     @FXML
@@ -64,51 +70,74 @@ public class LoginController implements Initializable{
 			passwordField.requestFocus();
 		}
     }
-    boolean sendRequestLoginToServer() throws IOException, InterruptedException {
-    	System.out.println(emailField.getText() + " -- " + passwordField.getText());
-    	String res[] = client.loginRequest(emailField.getText(), passwordField.getText()).split(",");
-    	if (res[0].equals("OK")) {
-    		this.currentPlayer = new Player(Integer.valueOf(res[1]), res[2], res[3], Integer.valueOf(res[4]) , Integer.valueOf(res[5]), Integer.valueOf(res[6]),
-    				Integer.valueOf(res[7]));
-    		return true;
-		}
-    	else {
-    		warningField.setVisible(true);
-			return false;
-		}
-    }
+    
     @FXML
-    void requestLogin(ActionEvent event) throws IOException, InterruptedException {
-//    	get username and password send to server
-//    	System.out.println();
-    	if (sendRequestLoginToServer() == true) {
-    		Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/fxml/"+ "Home" + ".fxml"));
-            Parent homeParentView = loader.load();
-            Scene scene = new Scene(homeParentView);
-            HomeController homeController = loader.getController();
-//            homeController.setPlayer(currentPlayer);
-//            System.out.println("login info player: "+currentPlayer.getUsername());
-            homeController.setup(client, currentPlayer);
-            loader.setController(homeController);
-            stage.setScene(scene);
+    public void sendLoginMessage(ActionEvent event) throws IOException, InterruptedException {
+    	String email, password;
+    	email = emailField.getText();
+    	password = passwordField.getText();
+    	System.out.println(email+"--"+password);
+    	if (!email.isEmpty() && !password.isEmpty()) {
+			String data = "login,"+email+","+password;
+			client.write(data);
 		}
-    	else {
-			
+    	else if (email.isBlank() || password.isBlank()) {
+    		warningField.setVisible(true);
+		}else {
+    		warningField.setVisible(true);
 		}
-    	
     }
+
+	public void setPlayer(Player player) {
+		this.player = player;
+		
+	}
+
+	public void setup(Client client) {
+		// TODO Auto-generated method stub
+		this.client = client;
+	}
 
     @FXML
     void register(ActionEvent event) {
-    	MainApp app = new MainApp();
     	try {
-			app.setRoot("Signup", "Signup");
+    		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SignUp.fxml"));
+            Parent root = loader.load();
+            primaryStage.setScene(new Scene(root));
+            primaryStage.show();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// TODO: handle exception
+			System.out.println(e);
 		}
     }
+    @FXML
+    public void changeToHomePage() {
+    	try {
+    		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Home.fxml"));
+            Parent root = loader.load();
+            primaryStage.setScene(new Scene(root));
+			HomeController homeController = loader.getController();
+			loader.setController(homeController);
+	        client.setHomeController(homeController);
+	        homeController.setup(client,player);
+	        primaryStage.show();
+		} catch (IOException e) {
+			// TODO: handle exception
+			System.out.println(e);
+		}
+    }
+    
+	public void handleLoginResponse(String serverMessage) {
+		String res[] = serverMessage.split(",");
+	    if (res[1].equals("OK")) {
+			this.player = new Player(Integer.valueOf(res[2]), res[3], res[4], Integer.valueOf(res[5]) , Integer.valueOf(res[6]), Integer.valueOf(res[7]),
+					Integer.valueOf(res[8]));
+			Platform.runLater(()->{changeToHomePage();});
+		}
+		else {
+			warningField.setVisible(true);
+		}
+		
+	}
 
 }

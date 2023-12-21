@@ -2,15 +2,18 @@ package caro.controllers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
 import caro.player.Player;
-import client.Client;
+import caro.Client;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -22,8 +25,14 @@ import javafx.scene.text.Text;
 public class BoardController implements Initializable {
 	private Player player;
 	private Client client;
+	private String rolePlay;
+	private Button btns[][];
+	private String board[][];
 	@FXML
     private Text myName;
+	
+	@FXML
+    private Text turnText;
 	
 	@FXML
     private Pane boardInformation;
@@ -32,6 +41,14 @@ public class BoardController implements Initializable {
     private GridPane gridBoard;
     
 	
+
+	public Text getTurnText() {
+		return turnText;
+	}
+
+	public void setTurnText(Text turnText) {
+		this.turnText = turnText;
+	}
 
 	public Player getPlayer() {
 		return player;
@@ -54,45 +71,82 @@ public class BoardController implements Initializable {
 		System.out.println(client.getSocket());
 		this.client = client;
 		this.player = newplayer;
-//		this.username.setText(player.getUsername());
-//		this.client.getMessageFromServer(viewMessVbox);
-		this.client.getMoveFromServer(gridBoard);
 	}
 	
-	public void move(String id) {
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				Button btnButton = (Button) gridBoard.getScene().lookup(id);
-				btnButton.setText("O");
-				btnButton.setStyle("-fx-font: 18 arial; -fx-text-fill: green;");
-				
+	public void setDisableBtn(boolean bool) {
+		for (int i = 0; i < 15; i++) {
+			for (int j = 0; j < 15; j++) {
+				btns[i][j].setDisable(bool);
 			}
-		});
-		
-		
+		}
+	}
+	
+	public void handleServerResponse(String serverResponse) {
+		String serverResponseSplit[] = serverResponse.split(",");
+		String header = serverResponseSplit[0];
+		if (serverResponseSplit[2].compareTo("WIN!") == 0) {
+			Platform.runLater(()->{
+				Alert alert = new Alert(AlertType.INFORMATION);
+		        alert.setTitle("Thông báo!");
+		        alert.setHeaderText("Trận đấu kết thúc!");
+		        alert.setContentText("Bạn đã chiến thắng!");
+		        alert.showAndWait();
+			});
+			
+		}
+		else if (header.compareTo("play-with-machine") == 0) {
+			String playerO = serverResponseSplit[1];
+			String btnId = serverResponseSplit[2];
+			Integer btnRow = Integer.parseInt(btnId.split("_")[1]);
+			Integer btnCol = Integer.parseInt(btnId.split("_")[2]);
+			Platform.runLater(()->{
+				if (board[btnRow][btnCol].compareTo("") == 0) {
+					Button btnButton = btns[btnRow][btnCol];
+					btnButton.setText(playerO);
+					btnButton.setStyle("-fx-font: 18 arial; -fx-text-fill: green;");
+					board[btnRow][btnCol] = "O";
+					setDisableBtn(false);
+					turnText.setText("YOUR TURN!");
+				}
+			});
+		}
 	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		turnText.setText("YOUR TURN!");
+		board = new String[15][15];
+		btns = new Button[15][15];
 		for (int i = 0; i < 15; i++) {
 			for (int j = 0; j < 15; j++) {
+				board[i][j] = "";
 				Button btnButton = new Button();
 				btnButton.setPrefSize(40.0, 40.0);
 				btnButton.setId("btn_"+i+"_"+j);
+				System.out.println("btn_"+i+"_"+j);
 				btnButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
 					@Override
 					public void handle(MouseEvent event) {
-						btnButton.setText("X");
-						btnButton.setStyle("-fx-font: 18 arial; -fx-text-fill: red;");
-//						System.out.println(btnButton.getId());
-						client.sendMove("play-with-machine", "server", btnButton.getId());
-//						gridBoard.getScene().lookup(client.receiveMove());
+	//						message type ("play-with-machine,X,btn_i_j")
+						System.out.println(btnButton.getId());
+						String btnId = btnButton.getId();
+						String btnIdSplit[] = btnId.split("_");
+						Integer btnRow = Integer.parseInt(btnIdSplit[1]);
+						Integer btnCol = Integer.parseInt(btnIdSplit[2]);
+						if(board[btnRow][btnCol].compareTo("") == 0)
+						{
+							btnButton.setText("X");
+							btnButton.setStyle("-fx-font: 18 arial; -fx-text-fill: red;");
+							client.write("play-with-machine,X,"+btnId);
+							board[btnRow][btnCol] = "X";
+							setDisableBtn(true);
+							turnText.setText("AI TURN!");
+						}
 					}
-					
 				});
-				gridBoard.add(btnButton, i, j);
+				gridBoard.add(btnButton, j, i);
+				btns[i][j] = btnButton;
 			}
 		}
 	}

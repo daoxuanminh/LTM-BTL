@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import caro.MainApp;
 import caro.player.Player;
-import client.Client;
+import caro.Client;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -92,13 +92,13 @@ public class SignupController {
 
     @FXML
     void changSceneLogin(ActionEvent event) {
-    	MainApp app = new MainApp();
-    	try {
-			app.setRoot("Login", "login");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//    	MainApp app = new MainApp();
+//    	try {
+//			app.setRoot("Login", "login");
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
     }
 
 }

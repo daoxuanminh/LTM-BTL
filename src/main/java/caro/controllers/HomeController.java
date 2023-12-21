@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
 
 import caro.player.Player;
 import caro.room.Room;
-import client.Client;
+import caro.Client;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -38,7 +38,7 @@ public class HomeController extends BaseController implements Initializable{
 	private ScrollPane scrollPane;
 	
 	@FXML
-	private Button btn_play;
+	private Button btn_play_now;
 	
 	@FXML
 	private Button btn_find_room;
@@ -73,9 +73,8 @@ public class HomeController extends BaseController implements Initializable{
     
     private ArrayList<Room> listRoom;
     
-    public Client getClient() {
-		return client;
-	}
+    private String messRecive;
+    
 	public void setClient(Client client) {
 		System.out.println(client.getSocket());
 		this.client = client;
@@ -88,27 +87,37 @@ public class HomeController extends BaseController implements Initializable{
 	public Player getPlayer() {
 		return player;
 	}
+	
 
+	public String getMessRecive() {
+		return messRecive;
+	}
+	public void setMessRecive(String messRecive) {
+		this.messRecive = messRecive;
+	}
 	public void setup(Client client, Player newplayer) {
-		System.out.println(client.getSocket());
+//		System.out.println(client.getSocket());
 		this.client = client;
 		this.player = newplayer;
 		this.username.setText(player.getUsername());
-		this.client.getMessageFromServer(viewMessVbox);
+		String messString = this.client.getServerMessage();
 	}
-	
 	@FXML
-    public void sendMessage(ActionEvent event) {
-		String mesString = inputMessagesTextField.getText();
-		if (!mesString.isEmpty()) {				
-			client.sendMessage(this.player.getUsername(), mesString);
-//			client.getMessageFromServer(viewMessVbox);
-			inputMessagesTextField.clear();
+	private void sendMessageGlobal() {
+		String message = inputMessagesTextField.getText();
+		if (!message.isEmpty()) {
+			client.write("global-message,"+player.getUsername()+","+message);
 		}
-		
-    }
-	
-	public static void addMess(String messFromServer, VBox vbox) {
+	}
+
+	public void handleServerResponse(String response) {
+	      // Xử lý phản hồi từ server và hiển thị trong giao diện người dùng
+		if (response.split(",")[0].compareTo("global-message") == 0) {
+			Platform.runLater(() -> appendToChatArea(response));		
+		}
+//		cac truong hop khac
+	}
+	public void appendToChatArea(String messFromServer) {
 		System.out.println(messFromServer);
 		String usernameString = messFromServer.split(",")[1];
 		String messString = messFromServer.split(",")[2];
@@ -116,20 +125,15 @@ public class HomeController extends BaseController implements Initializable{
 		Text usernameText = new Text(usernameString+": ");
 		Text messText = new Text(messString);
 		newMessBox.getChildren().addAll(usernameText, messText);
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				vbox.getChildren().add(newMessBox);
-				
-			}
-		});
+		viewMessVbox.getChildren().add(newMessBox);
+		inputMessagesTextField.clear();
 	}
 	
 	@FXML
     public void sendMessEnterKey(KeyEvent event) {
 		if (event.getCode() == KeyCode.ENTER) {
 			if (!inputMessagesTextField.getText().isEmpty()) {				
-				sendMessage(null);
+				sendMessageGlobal();
 			}
 		}
     }
@@ -143,51 +147,27 @@ public class HomeController extends BaseController implements Initializable{
     void openBoardWindow(MouseEvent event) {
 //		openModal("Board");
 		try {
-			Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+			Stage stage = new Stage();
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/fxml/"+ "Board" + ".fxml"));
-            Parent boardParentView = loader.load();
-            Scene scene = new Scene(boardParentView);
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
             BoardController boardController = loader.getController();
-//            homeController.setPlayer(currentPlayer);
-//            System.out.println("login info player: "+currentPlayer.getUsername());
+            player.setPlaying(true);
             boardController.setup(client, player);
-            loader.setController(boardController);
-            stage.setScene(scene);
+            client.setBoardController(boardController);
+            stage.setTitle("Board");
+            stage.initModality(Modality.APPLICATION_MODAL);
+			stage.setScene(scene);
 			stage.show();
-			
-//			Stage stage = new Stage();
-//            FXMLLoader loader = new FXMLLoader();
-//            loader.setLocation(getClass().getResource("/fxml/"+ "Board" + ".fxml"));
-//            Parent root = loader.load();
-//            Scene scene = new Scene(root);
-//            BoardController boardController = loader.getController();
-//            player.setPlaying(true);
-//            boardController.setPlayer(player);
-//            boardController.setClient(client);
-////            System.out.println(player.getUsername());
-//            stage.setTitle("Board");
-//			stage.setScene(new Scene(root));
-//		    stage.initModality(Modality.APPLICATION_MODAL);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(e);
 		}
-		
     }
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-//		try {
-//			System.out.println(client);
-//			this.client = new Client();
-//		} catch (UnknownHostException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+
 	}
 	
 }

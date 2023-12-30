@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 import caro.controllers.BoardController;
+import caro.controllers.BoardPlayerController;
 import caro.controllers.HomeController;
 import caro.controllers.LoginController;
 import javafx.scene.Node;
@@ -22,6 +23,7 @@ public class Client implements Runnable {
     private HomeController homeController;
     private LoginController loginController;
     private BoardController boardController;
+	private BoardPlayerController boardPlayerController;
     
     public Socket getSocket() {
 		return socket;
@@ -137,5 +139,10 @@ public class Client implements Runnable {
 
 	public void setBoardController(BoardController boardController) {
 		this.boardController = boardController;
+	}
+
+	public void setBoardPlayController(BoardPlayerController boardPlayerController) {
+		// TODO Auto-generated method stub
+		this.boardPlayerController = boardPlayerController;
 	}
 }

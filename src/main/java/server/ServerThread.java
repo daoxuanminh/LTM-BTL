@@ -23,6 +23,7 @@ public class ServerThread implements Runnable {
     private BufferedReader is;
     private BufferedWriter os;
     private boolean isClosed;
+    
 //    data test
     private String email = "daominh";
     private String username = "Dao Xuan Minh";
@@ -200,6 +201,12 @@ public class ServerThread implements Runnable {
                 	Server.serverThreadBus.mutilCastSend(message);
 //                	Server.serverThreadBus.sendMessageToPersion(clientNumber,"END", "");
                 }
+                if (messageSplit[0].compareTo("match-making") == 0) {
+                	System.out.println(message);
+				}
+                if (messageSplit[0].compareTo("cancer-making") == 0) {
+                	System.out.println(message);
+				}
                 if (messageSplit[0].compareTo("login") == 0) {
                 	System.out.println("vao login r");
                 	if (this.email.compareTo(messageSplit[1]) == 0 && this.password.compareTo(messageSplit[2])==0) {
@@ -216,7 +223,9 @@ public class ServerThread implements Runnable {
 //                	System.out.println();
                 	int bestMove[] = new int[100];
                 	try {
-                		
+                		if (messageSplit[0].compareTo("play-again") == 0) {
+							resetBoard();
+						}
                 		String btnId[] = messageSplit[2].split("_");
                 		int row = Integer.parseInt(btnId[1]);
                 		int col = Integer.parseInt(btnId[2]);

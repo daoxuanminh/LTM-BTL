@@ -9,9 +9,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import caro.Client;
+
 
 public class ServerThreadBus {
     private List<ServerThread> listServerThreads;
+    private List<ServerThread> listClientWaitPlay;
 
     public List<ServerThread> getListServerThreads() {
         return listServerThreads;
@@ -91,4 +94,20 @@ public class ServerThreadBus {
             }
         }
     }
+
+	public List<ServerThread> getListClientWaitPlay() {
+		return listClientWaitPlay;
+	}
+
+	public void setListClientWaitPlay(List<ServerThread> listClientWaitPlay) {
+		this.listClientWaitPlay = listClientWaitPlay;
+	}
+	
+	public void pushListClientWaitPlay(ServerThread listClientWaitPlay) {
+		this.listClientWaitPlay.add(listClientWaitPlay);
+	}
+	
+	public void deleteListClientWaitPlay(ServerThread clientCancerPlay) {
+		this.listClientWaitPlay.stream().filter(client -> client.getClientNumber() != clientCancerPlay.getClientNumber());
+	}
 }

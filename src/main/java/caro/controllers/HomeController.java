@@ -3,6 +3,7 @@ package caro.controllers;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import caro.player.Player;
@@ -11,12 +12,19 @@ import caro.Client;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -28,6 +36,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 
 public class HomeController extends BaseController implements Initializable{
@@ -66,6 +75,8 @@ public class HomeController extends BaseController implements Initializable{
 
     @FXML
     private AnchorPane viewMessages;
+    
+    private Timeline timeline;
     
     private Player player;
     
@@ -156,6 +167,51 @@ public class HomeController extends BaseController implements Initializable{
             player.setPlaying(true);
             boardController.setup(client, player);
             client.setBoardController(boardController);
+            stage.setTitle("Board");
+            stage.initModality(Modality.APPLICATION_MODAL);
+			stage.setScene(scene);
+			stage.show();
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+    }
+	
+	@FXML
+	void openClock() {
+		ProgressIndicator progressIndicator = new ProgressIndicator();
+
+        // Create an Alert with custom content
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Searching for Match");
+        alert.setHeaderText(null);
+        alert.setContentText("Searching for match...");
+        alert.setGraphic(progressIndicator);
+        alert.getButtonTypes().clear();
+        ButtonType cancer = new ButtonType("Hủy ghép");
+        alert.getButtonTypes().add(cancer);
+        // Set the alert to not close on focus loss
+        alert.initOwner(null);
+        Optional<ButtonType> option = alert.showAndWait();
+		client.write("match-making,"+player.getId()+",");
+		if (option.get() == cancer) {
+			client.write("cancer-making,"+player.getId()+",");
+		}
+	}
+	
+	
+	@FXML
+    void openBoardPlayerWindow(ActionEvent event) {
+//		openModal("Board");
+		try {
+			Stage stage = new Stage();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/fxml/"+ "BoardPlayer" + ".fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            BoardPlayerController boardPlayerController = loader.getController();
+            player.setPlaying(true);
+            boardPlayerController.setup(client, player);
+            client.setBoardPlayController(boardPlayerController);
             stage.setTitle("Board");
             stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setScene(scene);

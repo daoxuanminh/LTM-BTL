@@ -3,6 +3,7 @@ package caro.controllers;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import caro.player.Player;
@@ -15,6 +16,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -28,6 +30,16 @@ public class BoardController implements Initializable {
 	private String rolePlay;
 	private Button btns[][];
 	private String board[][];
+	
+	public void resetBoard(){
+		for (int i = 0; i < 15; i++) {
+			for (int j = 0; j < 15; j++) {
+				btns[i][j].setText("");
+				board[i][j] = "";
+			}
+		}
+	}
+	
 	@FXML
     private Text myName;
 	
@@ -74,6 +86,12 @@ public class BoardController implements Initializable {
 	}
 	
 	public void setDisableBtn(boolean bool) {
+		if (bool) {
+			turnText.setText("AI TURN!");
+		}
+		else {
+			turnText.setText("YOUR TURN!");
+		}
 		for (int i = 0; i < 15; i++) {
 			for (int j = 0; j < 15; j++) {
 				btns[i][j].setDisable(bool);
@@ -88,9 +106,22 @@ public class BoardController implements Initializable {
 			Platform.runLater(()->{
 				Alert alert = new Alert(AlertType.INFORMATION);
 		        alert.setTitle("Thông báo!");
-		        alert.setHeaderText("Trận đấu kết thúc!");
-		        alert.setContentText("Bạn đã chiến thắng!");
-		        alert.showAndWait();
+		        alert.setHeaderText("Bạn đã chiến thắng!");
+		        alert.setContentText("Bạn có muốn chơi lại!");
+		        ButtonType yesBtn = new ButtonType("Có");
+				ButtonType noBtn = new ButtonType("Không");
+				alert.getButtonTypes().clear();
+				alert.getButtonTypes().addAll(yesBtn, noBtn);
+				Optional<ButtonType> option = alert.showAndWait();
+				if (option.get()==yesBtn) {
+					client.write("play-with-machine,X,play-again");
+					resetBoard();
+					setDisableBtn(false);
+				}
+				
+				if (option.get()==noBtn) {
+					alert.close();
+				}
 			});
 			
 		}
@@ -106,7 +137,6 @@ public class BoardController implements Initializable {
 					btnButton.setStyle("-fx-font: 18 arial; -fx-text-fill: green;");
 					board[btnRow][btnCol] = "O";
 					setDisableBtn(false);
-					turnText.setText("YOUR TURN!");
 				}
 			});
 		}
@@ -141,7 +171,7 @@ public class BoardController implements Initializable {
 							client.write("play-with-machine,X,"+btnId);
 							board[btnRow][btnCol] = "X";
 							setDisableBtn(true);
-							turnText.setText("AI TURN!");
+							
 						}
 					}
 				});

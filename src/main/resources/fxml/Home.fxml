@@ -58,7 +58,7 @@
             </VBox>
             <VBox layoutX="14.0" layoutY="29.0" prefWidth="223.0" spacing="10.0">
                <children>
-                  <Button fx:id="btn_play_now" mnemonicParsing="false" prefHeight="25.0" prefWidth="226.0" text="Chơi ngay">
+                  <Button fx:id="btn_play_now" mnemonicParsing="false" onAction="#openClock" prefHeight="25.0" prefWidth="226.0" text="Chơi ngay">
                      <padding>
                         <Insets bottom="6.0" top="6.0" />
                      </padding></Button>

@@ -5,9 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
 
 import caro.CaroAI;
+import caro.player.Player;
+import service.PlayerService;
 
 /**
  *
@@ -18,13 +22,17 @@ public class ServerThread implements Runnable {
 //    private static final String PLAYER_X = "X";
 //    private static final String PLAYER_O = "O";
     private Socket socketOfServer;
-    private String[][] boardGame = new String[15][15]; 
     private int clientNumber;
+    Integer row=0;
+	int col=0;
+	String player="";
+	int competitorID=0;
+    private String[][] boardGame = new String[15][15]; 
     private BufferedReader is;
     private BufferedWriter os;
     private boolean isClosed;
-    
 //    data test
+    private Player user; 
     private String email = "daominh";
     private String username = "Dao Xuan Minh";
     private String password = "a";
@@ -32,6 +40,7 @@ public class ServerThread implements Runnable {
     int numberOfWin = 0;
     int numberOfDraw = 0;
 	int totalScore = 0;
+	private PlayerService playerService = new PlayerService();
     
 	private boolean checkWin(int lastMoveRow, int lastMoveCol, String player) {
         // Kiểm tra hàng
@@ -181,36 +190,55 @@ public class ServerThread implements Runnable {
             is = new BufferedReader(new InputStreamReader(socketOfServer.getInputStream()));
             os = new BufferedWriter(new OutputStreamWriter(socketOfServer.getOutputStream()));
             System.out.println("Khời động luông mới thành công, ID là: " + clientNumber);
-//            write("get-id" + "," + this.clientNumber);
 //            Server.serverThreadBus.sendOnlineList();
-//            Server.serverThreadBus.mutilCastSend("global-message"+","+"---Client "+this.clientNumber+" đã đăng nhập---");
+            Server.serverThreadBus.mutilCastSend("online-list"+","+"---Client "+this.clientNumber+" đã đăng nhập---");
             String message;
             while (!isClosed) {
                 message = is.readLine();
                 if (message == null) {
                     break;
                 }
+                System.out.println(Server.listClientIdWaite);
                 String[] messageSplit = message.split(",");
-                System.out.println(message);
+                System.out.println("Received from client: "+message);
 //                System.out.println("login".length());
 //                if(messageSplit[0] == "send-to-global"){
 //                    Server.serverThreadBus.boardGameCast(this.getClientNumber(),"global-message"+","+"Client "+messageSplit[2]+": "+messageSplit[1]);
 //                }
+                if(messageSplit[0].compareTo("room-message")==0){
+                	Server.serverThreadBus.sendMessageToPersion(Integer.parseInt(messageSplit[3]), message);
+                	Server.serverThreadBus.sendMessageToPersion(clientNumber, message);
+//                	Server.serverThreadBus.sendMessageToPersion(clientNumber,"END", "");
+                }
                 if(messageSplit[0].compareTo("global-message")==0){
-                	System.out.println(message);
+//                	System.out.println(message);
                 	Server.serverThreadBus.mutilCastSend(message);
 //                	Server.serverThreadBus.sendMessageToPersion(clientNumber,"END", "");
                 }
                 if (messageSplit[0].compareTo("match-making") == 0) {
-                	System.out.println(message);
+                	if(Server.listClientIdWaite.isEmpty()) {
+                		Server.listClientIdWaite.add(messageSplit[1]);
+                		System.out.println(Server.listClientIdWaite);                		
+                	}
+                	else {
+                		Random rd = new Random();
+                		Boolean tmpBoolean = rd.nextBoolean();
+                		String rolePlay1 = tmpBoolean ? "X" : "O";
+                		String rolePlay2 = !tmpBoolean ? "X" : "O";
+                		competitorID = Integer.parseInt(Server.listClientIdWaite.remove());
+                		Server.serverThreadBus.sendMessageToPersion(clientNumber,"match-making-success,"+rolePlay1, Integer.toString(competitorID));
+                		Server.serverThreadBus.sendMessageToPersion(competitorID,"match-making-success,"+rolePlay2, Integer.toString(clientNumber));
+					}
 				}
                 if (messageSplit[0].compareTo("cancer-making") == 0) {
-                	System.out.println(message);
+                	Server.listClientIdWaite.remove(Integer.toString(clientNumber));
+                	Server.serverThreadBus.sendMessageToPersion(clientNumber,"cancer-making-success", "");
 				}
                 if (messageSplit[0].compareTo("login") == 0) {
                 	System.out.println("vao login r");
-                	if (this.email.compareTo(messageSplit[1]) == 0 && this.password.compareTo(messageSplit[2])==0) {
-                		Server.serverThreadBus.sendMessageToPersion(clientNumber, "login,OK", clientNumber+","+email+","+username+","+numberOfGame+","+numberOfWin+","+numberOfDraw+","+totalScore);
+                	user = playerService.getPlayerByLoginInf(messageSplit[1], messageSplit[2]);
+                	if (user != null) {
+                		Server.serverThreadBus.sendMessageToPersion(clientNumber, "login,OK", clientNumber+","+user.getEmail()+","+user.getUsername()+","+user.getNumberOfGame()+","+user.getNumberOfWin()+","+user.getNumberOfDraw()+","+user.getTotalScore());
 //                		Server.serverThreadBus.sendMessageToPersion(clientNumber,"END", "");
 					}
                 	else {
@@ -218,9 +246,57 @@ public class ServerThread implements Runnable {
 //                		Server.serverThreadBus.sendMessageToPersion(clientNumber,"END", "");
 					}
 				}
+                if (messageSplit[0].compareTo("play-with-player") == 0) {
+					System.out.println("vào xử lý play with player");
+					
+					try {
+						
+                		if (messageSplit[2].compareTo("agree-play-again") == 0) {
+                			Server.serverThreadBus.sendMoveToPersion(competitorID,"play-with-player,"+player,"agrre-play-again");
+                			Server.serverThreadBus.sendMoveToPersion(clientNumber,"play-with-player,"+player,"agrre-play-again");
+                			resetBoard();
+                		}
+                		else if (messageSplit[2].compareTo("play-again") == 0) {
+//                			gui loi moi den nguoi choi con lai de đấu lai
+                			player = messageSplit[1];
+                			Server.serverThreadBus.sendMoveToPersion(competitorID,"play-with-player,"+player,"play-again");
+                			
+                		}else if (messageSplit[2].compareTo("disagrre-play-again") == 0) {
+                			
+						}else {
+							String btnId[] = messageSplit[2].split("_");
+                    		row = Integer.parseInt(btnId[1]);
+                    		col = Integer.parseInt(btnId[2]);
+                    		player = messageSplit[1]; 
+                    		boardGame[row][col] = player;
+                    		competitorID = Integer.parseInt(messageSplit[3]);
+                    		if (checkWin(row, col, player)) {
+//                    			gửi tin nhắn người chơi nào win
+                    			Server.serverThreadBus.sendMoveToPersion(competitorID,"play-with-player,"+player,"WIN!");
+                    			Server.serverThreadBus.sendMoveToPersion(clientNumber,"play-with-player,"+player,"WIN!");
+                    			resetBoard();
+    						}
+                    		else if (isBoardFull()) {
+//                    			gửi tin nhắn bàn cờ full
+                    			Server.serverThreadBus.sendMoveToPersion(competitorID,"play-with-player,"+player,"DRAW!");
+                    			Server.serverThreadBus.sendMoveToPersion(clientNumber,"play-with-player,"+player,"DRAW!");
+    						}
+                    		else {
+//                    			gửi tin nhắn nước đi cho đối thủ
+                        		Server.serverThreadBus.sendMoveToPersion(competitorID ,"play-with-player,"+player,messageSplit[2]);
+    						}
+//							Server.serverThreadBus.sendMoveToPersion(competitorID,"play-with-player,"+player,"disagrre-play-again");
+						}
+                		
+                		
+                		
+					} catch (Exception e) {
+						// TODO: handle exception
+						System.out.println(e);
+						e.printStackTrace();
+					}
+				}
                 if (messageSplit[0].compareTo("play-with-machine") == 0) {
-                	System.out.println("vao play-with-machine r");
-//                	System.out.println();
                 	int bestMove[] = new int[100];
                 	try {
                 		if (messageSplit[0].compareTo("play-again") == 0) {
@@ -260,6 +336,7 @@ public class ServerThread implements Runnable {
             Server.serverThreadBus.remove(clientNumber);
             System.out.println(this.clientNumber+" đã thoát");
             Server.serverThreadBus.sendOnlineList();
+            Server.listClientIdWaite.remove(Integer.toString(clientNumber));
 //            Server.serverThreadBus.mutilCastSend("global-message"+","+"---Client "+this.clientNumber+",Đã thoát!");
         }
     }

@@ -6,15 +6,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.LinkedList;
 
 import caro.controllers.BoardController;
 import caro.controllers.BoardPlayerController;
 import caro.controllers.HomeController;
 import caro.controllers.LoginController;
+import caro.controllers.SignupController;
 import javafx.scene.Node;
 import javafx.stage.Stage;
 
 public class Client implements Runnable {
+	private LinkedList<String> listClientIdOnline = new LinkedList<String>();
     private Socket socket;
     private BufferedWriter os;
     private BufferedReader is;
@@ -24,6 +27,15 @@ public class Client implements Runnable {
     private LoginController loginController;
     private BoardController boardController;
 	private BoardPlayerController boardPlayerController;
+	public BoardPlayerController getBoardPlayerController() {
+		return boardPlayerController;
+	}
+
+	public void setBoardPlayerController(BoardPlayerController boardPlayerController) {
+		this.boardPlayerController = boardPlayerController;
+	}
+
+	private SignupController signupController;
     
     public Socket getSocket() {
 		return socket;
@@ -76,7 +88,11 @@ public class Client implements Runnable {
                 // Xử lý tin nhắn từ server ở đây
                 System.out.println("Received from server: " + serverMessage);
                 String serverMessageSplit[] = serverMessage.split(",");
-                
+                if (serverMessageSplit[0].compareTo("room-message") == 0) {
+                	if (boardPlayerController != null) {						
+                		boardPlayerController.handleRoomMessResponse(serverMessage);
+					}
+				}
                 if (serverMessageSplit[0].compareTo("global-message") == 0) {
                 	if (homeController != null) {						
                 		homeController.handleServerResponse(serverMessage);
@@ -88,9 +104,28 @@ public class Client implements Runnable {
                 	}
 				}
                 if (serverMessageSplit[0].compareTo("play-with-machine") == 0) {
-                	boardController.handleServerResponse(serverMessage);
                 	if (boardController != null) {						
+                		boardController.handleServerResponse(serverMessage);
 					}
+				}
+                if (serverMessageSplit[0].compareTo("play-with-player") == 0) {
+                	
+                	if (serverMessageSplit[2].compareTo("play-again") == 0) {
+                		boardPlayerController.closeAlert();
+                		boardPlayerController.openAlertPlayAgain();
+					}else if(serverMessageSplit[2].compareTo("agrre-play-again") == 0) {
+						System.out.println("nhan duoc dong y choi lai!");
+						boardPlayerController.playAgain();
+						boardPlayerController.resetBoard();
+						boardPlayerController.closeAlert();
+					}
+					else {
+						boardPlayerController.handleServerResponse(serverMessage);
+					}
+				}
+                if (serverMessageSplit[0].compareTo("match-making-success") == 0) {
+					homeController.closeAlert();
+					homeController.openBoardPlayerWindow(serverMessageSplit[1], serverMessageSplit[2]);
 				}
             }
         } catch (IOException e) {
@@ -144,5 +179,10 @@ public class Client implements Runnable {
 	public void setBoardPlayController(BoardPlayerController boardPlayerController) {
 		// TODO Auto-generated method stub
 		this.boardPlayerController = boardPlayerController;
+	}
+
+	public void setSignUpController(SignupController signupController) {
+		// TODO Auto-generated method stub
+		this.signupController = signupController;
 	}
 }

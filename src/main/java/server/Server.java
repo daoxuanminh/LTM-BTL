@@ -8,10 +8,15 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import service.DB;
+import service.PlayerService;
 
 /**
  *
@@ -21,8 +26,11 @@ public class Server {
 
     public static volatile ServerThreadBus serverThreadBus;
     public static Socket socketOfServer;
-
+    public static LinkedList<String> listClientIdWaite = new LinkedList<String>();
+    
+    
     public static void main(String[] args) {
+//    	Connection connection = DB.getConnection();
         ServerSocket listener = null;
         serverThreadBus = new ServerThreadBus();
         System.out.println("Server is waiting to accept user...");
@@ -38,9 +46,9 @@ public class Server {
             System.exit(1);
         }
         ThreadPoolExecutor executor = new ThreadPoolExecutor(
-                10, // corePoolSize
+                100, // corePoolSize
                 100, // maximumPoolSize
-                10, // thread timeout
+                100, // thread timeout
                 TimeUnit.SECONDS,
                 new ArrayBlockingQueue<>(8) // queueCapacity
         );

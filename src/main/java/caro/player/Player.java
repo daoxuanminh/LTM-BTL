@@ -40,7 +40,17 @@ public class Player {
 		this.totalScore = totalScore;
 	}
 
-
+	public Player(String email, String username, int numberOfGame, int numberOfWin, int numberOfDraw,
+			int totalScore) {
+		super();
+		this.email = email;
+		this.username = username;
+		this.numberOfGame = numberOfGame;
+		this.numberOfWin = numberOfWin;
+		this.numberOfDraw = numberOfDraw;
+		this.totalScore = totalScore;
+	}
+	
 	public Player(String username, String email, String password, int numberOfGame, int numberOfWin, int numberOfDraw, boolean isOline, boolean isPlaying, int totalScore) {
 		super();
 		this.username = username;
@@ -132,5 +142,13 @@ public class Player {
 	public void setTotalScore(int totalScore) {
 		this.totalScore = totalScore;
 	}
-	
+	@Override
+    public String toString() {
+        return  email +
+                "," + username +
+                "," + numberOfGame +
+                "," + numberOfWin +
+                "," + numberOfDraw +
+                "," + totalScore;
+    }
 }

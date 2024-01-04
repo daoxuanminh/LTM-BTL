@@ -10,11 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import caro.Client;
-
+import service.PlayerService;
+import service.DB;
 
 public class ServerThreadBus {
     private List<ServerThread> listServerThreads;
     private List<ServerThread> listClientWaitPlay;
+    
 
     public List<ServerThread> getListServerThreads() {
         return listServerThreads;
@@ -37,6 +39,10 @@ public class ServerThreadBus {
             }
         }
     }
+    
+    public void addListWaiteClient() {
+		
+	}
     
     public void boardCast(int id, String message){
         for(ServerThread serverThread : Server.serverThreadBus.getListServerThreads()){
@@ -68,6 +74,18 @@ public class ServerThreadBus {
             if(serverThread.getClientNumber()==id){
                 try {
                     serverThread.write(headerStatus+","+message);
+                    break;
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+    public void sendMessageToPersion(int id, String message ){
+        for(ServerThread serverThread : Server.serverThreadBus.getListServerThreads()){
+            if(serverThread.getClientNumber()==id){
+                try {
+                    serverThread.write(message);
                     break;
                 } catch (IOException ex) {
                     ex.printStackTrace();

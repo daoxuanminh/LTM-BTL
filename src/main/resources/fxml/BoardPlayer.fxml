@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -63,7 +66,7 @@
                               <Insets bottom="50.0" />
                            </VBox.margin>
                         </Text>
-                        <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+                        <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="60.0">
                            <children>
                               <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                                  <children>
@@ -72,7 +75,7 @@
                                           <Font size="18.0" />
                                        </font>
                                     </Text>
-                                    <Text fill="#e00f07" strokeType="OUTSIDE" strokeWidth="0.0" text="X">
+                                    <Text fx:id="userRolePlay" fill="#e00f07" strokeType="OUTSIDE" strokeWidth="0.0" text="X">
                                        <font>
                                           <Font size="36.0" />
                                        </font>
@@ -81,12 +84,12 @@
                               </VBox>
                               <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                                  <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="AI">
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Competitor" wrappingWidth="100.5537109375">
                                        <font>
                                           <Font size="18.0" />
                                        </font>
                                     </Text>
-                                    <Text fill="#1b8d30" strokeType="OUTSIDE" strokeWidth="0.0" text="O">
+                                    <Text fx:id="competitorRole" fill="#1b8d30" strokeType="OUTSIDE" strokeWidth="0.0" text="O">
                                        <font>
                                           <Font size="36.0" />
                                        </font>
@@ -106,6 +109,43 @@
                         </Text>
                      </children>
                   </HBox>
+                  <VBox layoutY="286.0" prefHeight="307.0" prefWidth="400.0">
+                     <children>
+                        <ScrollPane fx:id="scrollPane" prefHeight="275.0" prefWidth="390.0">
+                           <content>
+                              <AnchorPane fx:id="viewMessages" prefWidth="372.0">
+                                 <children>
+                                    <VBox fx:id="viewMessVbox" prefWidth="390.0">
+                                       <children>
+                                          <HBox prefWidth="390.0">
+                                             <children>
+                                                <Text fx:id="messageSenderName" strokeType="OUTSIDE" strokeWidth="0.0" text="Server: " />
+                                                <Text fx:id="messageSenderName1" strokeType="OUTSIDE" strokeWidth="0.0" text="Chào mừng đến với bình nguyên vô tận!" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </ScrollPane>
+                        <HBox>
+                           <children>
+                              <TextField fx:id="inputMessagesTextField" onDragEntered="#sendMessageGlobal" onKeyPressed="#sendMessEnterKey" prefHeight="25.0" prefWidth="304.0" />
+                              <Button mnemonicParsing="false" onAction="#sendMessageGlobal" prefHeight="25.0" prefWidth="90.0" text="Gửi" />
+                           </children>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </HBox>
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="5.0" right="5.0" />
+                     </padding>
+                  </VBox>
                </children>
             </Pane>
          </children>

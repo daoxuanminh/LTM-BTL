@@ -1,6 +1,7 @@
 package caro.controllers;
 
 import java.io.IOException;
+import java.lang.System.LoggerFinder;
 
 import caro.MainApp;
 import caro.player.Player;
@@ -22,9 +23,18 @@ import javafx.stage.Stage;
 
 public class SignupController {
 	
-	private Player currentPlayer;
+	private Player player;
 	private Client client;
+	private Stage primaryStage;
 	
+	public Stage getPrimaryStage() {
+		return primaryStage;
+	}
+
+	public void setPrimaryStage(Stage primaryStage) {
+		this.primaryStage = primaryStage;
+	}
+
 	@FXML
 	private Text warningText;
 
@@ -52,14 +62,14 @@ public class SignupController {
 		}
     	else {
     		if (sendRequestSignupToServer() == true) {
-    			currentPlayer = new Player(usernameInputText.getText() ,emailInputText.getText(), passwordInputText.getText());
+    			player = new Player(usernameInputText.getText() ,emailInputText.getText(), passwordInputText.getText());
         		Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
                 FXMLLoader loader = new FXMLLoader();
                 loader.setLocation(getClass().getResource("/fxml/"+ "Home" + ".fxml"));
                 Parent homeParentView = loader.load();
                 Scene scene = new Scene(homeParentView);
                 HomeController homeController = loader.getController();
-                homeController.setPlayer(currentPlayer);
+                homeController.setPlayer(player);
                 stage.setScene(scene);
     		}
         	else {
@@ -92,13 +102,26 @@ public class SignupController {
 
     @FXML
     void changSceneLogin(ActionEvent event) {
-//    	MainApp app = new MainApp();
-//    	try {
-//			app.setRoot("Login", "login");
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+    	try {
+    		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
+            Parent root = loader.load();
+            primaryStage.setScene(new Scene(root));
+			LoginController loginController = loader.getController();
+			loader.setController(loginController);
+			loginController.setPrimaryStage(primaryStage);
+	        client.setLoginController(loginController);
+	        loginController.setup(client);
+	        primaryStage.show();
+		} catch (IOException e) {
+			// TODO: handle exception
+			System.out.println(e);
+		}
     }
+
+	public void setup(Client client, Player player) {
+		// TODO Auto-generated method stub
+		this.client = client;
+		this.player = player;
+	}
 
 }

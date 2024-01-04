@@ -52,7 +52,7 @@ public class LoginController implements Initializable{
     
     public void initialize(URL location, ResourceBundle resources) {
     	emailField.setText("daominh");
-    	passwordField.setText("a");
+    	passwordField.setText("1");
     }
     
     @FXML
@@ -103,8 +103,13 @@ public class LoginController implements Initializable{
     	try {
     		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SignUp.fxml"));
             Parent root = loader.load();
-            primaryStage.setScene(new Scene(root));
-            primaryStage.show();
+			SignupController signupController = loader.getController();
+			signupController.setPrimaryStage(primaryStage);
+			loader.setController(signupController);
+	        client.setSignUpController(signupController);
+	        signupController.setup(client,player);
+	        primaryStage.setScene(new Scene(root));
+	        primaryStage.show();
 		} catch (IOException e) {
 			// TODO: handle exception
 			System.out.println(e);
@@ -117,6 +122,7 @@ public class LoginController implements Initializable{
             Parent root = loader.load();
             primaryStage.setScene(new Scene(root));
 			HomeController homeController = loader.getController();
+			homeController.setPrimaryStage(primaryStage);
 			loader.setController(homeController);
 	        client.setHomeController(homeController);
 	        homeController.setup(client,player);

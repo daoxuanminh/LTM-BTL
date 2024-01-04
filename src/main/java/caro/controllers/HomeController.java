@@ -40,6 +40,8 @@ import javafx.util.Duration;
 
 
 public class HomeController extends BaseController implements Initializable{
+	private Alert alert;
+	private Stage primaryStage;
 	@FXML
 	private Button btn_play_with_machine;
 	
@@ -50,10 +52,10 @@ public class HomeController extends BaseController implements Initializable{
 	private Button btn_play_now;
 	
 	@FXML
-	private Button btn_find_room;
+	private Button btn_defy;
 	
 	@FXML
-	private Button btn_create_room;
+	private Button btn_logout;
 	
 	@FXML
     private TextField inputMessagesTextField;
@@ -120,7 +122,9 @@ public class HomeController extends BaseController implements Initializable{
 			client.write("global-message,"+player.getUsername()+","+message);
 		}
 	}
-
+	public void closeStage() {
+		
+	} 
 	public void handleServerResponse(String response) {
 	      // Xử lý phản hồi từ server và hiển thị trong giao diện người dùng
 		if (response.split(",")[0].compareTo("global-message") == 0) {
@@ -139,6 +143,8 @@ public class HomeController extends BaseController implements Initializable{
 		viewMessVbox.getChildren().add(newMessBox);
 		inputMessagesTextField.clear();
 	}
+	
+	
 	
 	@FXML
     public void sendMessEnterKey(KeyEvent event) {
@@ -176,26 +182,69 @@ public class HomeController extends BaseController implements Initializable{
 		}
     }
 	
+    public void openBoardPlayerWindow(String rolePlay, String competitorId) {
+//		openModal("Board");
+		Platform.runLater(()->{
+			try {
+				Stage stage = new Stage();
+	            FXMLLoader loader = new FXMLLoader();
+	            loader.setLocation(getClass().getResource("/fxml/"+ "BoardPlayer" + ".fxml"));
+	            Parent root = loader.load();
+	            Scene scene = new Scene(root);
+	            BoardPlayerController boardController = loader.getController();
+	            player.setPlaying(true);
+	            boardController.setRolePlay(rolePlay);
+	            boardController.setCompetitorId(Integer.parseInt(competitorId));
+	            boardController.setup(client, player);
+	            client.setBoardPlayController(boardController);
+	            stage.setTitle("BoardPlayer");
+	            stage.initModality(Modality.APPLICATION_MODAL);
+				stage.setScene(scene);
+				stage.show();
+			} catch (IOException e) {
+				System.out.println(e);
+				e.printStackTrace();
+			}
+		});
+    }
+	
+	public void closeAlert() {
+		Platform.runLater(()->{
+			this.alert.close();
+		});
+		
+	}
 	@FXML
-	void openClock() {
-		ProgressIndicator progressIndicator = new ProgressIndicator();
+	void openClock(ActionEvent event) {
+	    String messageString = "match-making," + player.getId() + ",";
+	    client.write(messageString);
 
-        // Create an Alert with custom content
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Searching for Match");
-        alert.setHeaderText(null);
-        alert.setContentText("Searching for match...");
-        alert.setGraphic(progressIndicator);
-        alert.getButtonTypes().clear();
-        ButtonType cancer = new ButtonType("Hủy ghép");
-        alert.getButtonTypes().add(cancer);
-        // Set the alert to not close on focus loss
-        alert.initOwner(null);
-        Optional<ButtonType> option = alert.showAndWait();
-		client.write("match-making,"+player.getId()+",");
-		if (option.get() == cancer) {
-			client.write("cancer-making,"+player.getId()+",");
-		}
+//	    System.out.println(messageString);
+
+	    Platform.runLater(() -> {
+	        ProgressIndicator progressIndicator = new ProgressIndicator();
+	        // Create an Alert with custom content
+	        this.alert = new Alert(Alert.AlertType.INFORMATION);
+	        alert.setTitle("Searching for Match");
+	        alert.setHeaderText(null);
+	        alert.setContentText("Searching for match...");
+	        alert.setGraphic(progressIndicator);
+	        alert.getButtonTypes().clear();
+	        ButtonType cancer = new ButtonType("Hủy ghép");
+	        alert.getButtonTypes().add(cancer);
+
+	        // Set the alert to not close on focus loss
+	        // alert.initOwner(null);
+
+	        Optional<ButtonType> option = alert.showAndWait();
+
+	        if (option.isPresent() && option.get() == cancer) {
+	        	String messCancerString = "cancer-making," + player.getId() + ",";
+	            client.write(messCancerString);
+//	            System.out.println(messCancerString);
+	            
+	        }
+	    });
 	}
 	
 	
@@ -225,6 +274,27 @@ public class HomeController extends BaseController implements Initializable{
 	public void initialize(URL location, ResourceBundle resources) {
 
 	}
+	public void setPrimaryStage(Stage primaryStage2) {
+		// TODO Auto-generated method stub
+		this.primaryStage = primaryStage2;
+	}
 	
+	@FXML
+    void changSceneLogin(ActionEvent event) {
+    	try {
+    		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
+            Parent root = loader.load();
+            primaryStage.setScene(new Scene(root));
+			LoginController loginController = loader.getController();
+			loader.setController(loginController);
+			loginController.setPrimaryStage(primaryStage);
+	        client.setLoginController(loginController);
+	        loginController.setup(client);
+	        primaryStage.show();
+		} catch (IOException e) {
+			// TODO: handle exception
+			System.out.println(e);
+		}
+    }
 }
 

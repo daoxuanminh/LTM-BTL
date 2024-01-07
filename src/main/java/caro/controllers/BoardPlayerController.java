@@ -13,6 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
@@ -36,6 +37,8 @@ public class BoardPlayerController implements Initializable{
     private TextField inputMessagesTextField;
     @FXML
     private Text myName;
+    @FXML
+    private Text competitorName;
     @FXML
     private Text userRolePlay;
     @FXML
@@ -148,8 +151,9 @@ public class BoardPlayerController implements Initializable{
 		return competitorId;
 	}
 
-	public void setCompetitorId(int competitorId) {
+	public void setCompetitorId(int competitorId, String competitorName) {
 		this.competitorId = competitorId;
+		this.competitorName.setText(competitorName);
 	}
 	
 	public void resetBoard(){
@@ -165,10 +169,15 @@ public class BoardPlayerController implements Initializable{
 	
 	public void closeAlert() {
 		Platform.runLater(()->{
-			alert.close();
+			client.getBoardPlayerController().getAlert().close();
 		});
 	}
 	
+	private Alert getAlert() {
+		// TODO Auto-generated method stub
+		return this.alert;
+	}
+
 	public void playAgain() {
 		Platform.runLater(()->{
 			if (rolePlay.compareTo("X") == 0) {
@@ -182,7 +191,8 @@ public class BoardPlayerController implements Initializable{
 	
 	public void openAlertPlayAgain() {
 		Platform.runLater(()->{
-			alert = new Alert(AlertType.INFORMATION);
+			client.getBoardPlayerController().getAlert().close();
+			alert = new Alert(Alert.AlertType.INFORMATION);
 	        alert.setTitle("Thông báo!");
 	        alert.setHeaderText("Đối thủ mời bạn đấu lại!");					
 	        alert.setContentText("Bạn có muốn chơi lại!");
@@ -190,19 +200,25 @@ public class BoardPlayerController implements Initializable{
 			ButtonType noBtn = new ButtonType("Không");
 			alert.getButtonTypes().clear();
 			alert.getButtonTypes().addAll(yesBtn, noBtn);
+			
 			Optional<ButtonType> option = alert.showAndWait();
 			if (option.get()==yesBtn) {
 				String messageString = "match-making," + player.getId() + ",";
 				client.write("play-with-player,"+rolePlay+",agree-play-again");
 				resetBoard();
 				setDisableBtn(false);
+				alert.close();
+				alert.close();
 			}
 			if (option.get()==noBtn) {
 				client.write("play-with-player,"+rolePlay+",disagree-play-again");
 				client.getHomeController().closeStage();
 				alert.close();
+				alert.close();
 			}
+			
 		});
+		
 	}
 	
 	public void openAlertWaitePlayAgain() {
@@ -212,7 +228,21 @@ public class BoardPlayerController implements Initializable{
 	        alert.setHeaderText("Đang chờ đối thủ xác nhận!");					
 	        alert.setContentText("Vui lòng chờ!");
 			alert.show();
-
+			ButtonType yesBtn = new ButtonType("OK");
+//			ButtonType noBtn = new ButtonType("Không");
+			alert.getButtonTypes().clear();
+			alert.getButtonTypes().add(yesBtn);
+		});
+	}
+	
+	public void openAlertDisAgreePlayAgain() {
+		Platform.runLater(()->{
+			alert.close();
+			alert = new Alert(Alert.AlertType.INFORMATION);
+	        alert.setTitle("Thông báo!");
+	        alert.setHeaderText("Đối thủ đã từ chối!");					
+//	        alert.setContentText("Vui lòng chờ!");
+			alert.showAndWait();
 		});
 	}
 	
@@ -231,13 +261,19 @@ public class BoardPlayerController implements Initializable{
 			}
 		}
     }
+//	E3T642A5434N5
 	public void handleServerResponse(String serverResponse) {
 		// TODO Auto-generated method stub
+		System.out.println("handleServerResponse");
 		String serverResponseSplit[] = serverResponse.split(",");
 		String header = serverResponseSplit[0];
+		client.getPlayer().setPlaying(true);
+		
 		if (serverResponseSplit[2].compareTo("WIN!") == 0) {
 			Platform.runLater(()->{
-				alert = new Alert(AlertType.CONFIRMATION);
+				
+				client.getPlayer().setPlaying(false);
+				alert = new Alert(Alert.AlertType.INFORMATION);
 		        alert.setTitle("Thông báo!");
 		        if (serverResponseSplit[1].compareTo(rolePlay) == 0) {
 		        	alert.setHeaderText("Bạn đã chiến thắng!");					
@@ -254,12 +290,27 @@ public class BoardPlayerController implements Initializable{
 				if (option.get()==yesBtn) {
 					openAlertWaitePlayAgain();
 					client.write("play-with-player,"+rolePlay+",play-again");
+					closeAlert();
 				}
 				if (option.get()==noBtn) {
-					alert.close();
+					closeAlert();
+					client.getPlayer().setPlaying(false);
 				}
 			});
 			
+		}
+		else if (serverResponseSplit[2].compareTo("play-again") == 0) {
+			closeAlert();
+			openAlertPlayAgain();
+		}
+		else if (serverResponseSplit[2].compareTo("disagree-play-again") == 0) {
+			closeAlert();
+			openAlertDisAgreePlayAgain();
+		}
+		else if (serverResponseSplit[2].compareTo("agrre-play-again") == 0) {
+			closeAlert();
+			playAgain();
+			resetBoard();
 		}
 		else {
 			String playerO = serverResponseSplit[1];

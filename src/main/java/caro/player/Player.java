@@ -11,7 +11,16 @@ public class Player {
 	private boolean isOline;
 	private boolean isPlaying;
 	private int totalScore;
-	
+	public Player(String mesString) {
+		String res[] = mesString.split(",");
+		this.id = Integer.valueOf(res[1]);
+		this.email = res[2];
+		this.username = res[3];
+		this.numberOfGame = Integer.valueOf(res[4]);
+		this.numberOfWin = Integer.valueOf(res[5]);
+	 	this.numberOfDraw = Integer.valueOf(res[6]);
+	 	this.totalScore = Integer.valueOf(res[7]);
+	}
 	public Player(int id, String email, String username, String password, int numberOfGame, int numberOfWin,
 			int numberOfDraw, boolean isOline, boolean isPlaying, int totalScore) {
 		super();
@@ -144,11 +153,30 @@ public class Player {
 	}
 	@Override
     public String toString() {
+		
         return  email +
                 "," + username +
                 "," + numberOfGame +
                 "," + numberOfWin +
                 "," + numberOfDraw +
                 "," + totalScore;
+    }
+	@Override
+	public boolean equals(Object obj) {
+        // Check if the object is the same instance
+        if (this == obj) {
+            return true;
+        }
+
+        // Check if the object is null or of a different class
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        // Cast the object to the current class
+        Player other = (Player) obj;
+
+        // Compare the attributes for equality
+        return username.equals(other.getUsername()) && email.equals(other.getEmail());
     }
 }

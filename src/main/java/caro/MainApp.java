@@ -54,11 +54,21 @@ public class MainApp extends Application {
 	        loginController.setPrimaryStage(primaryStage);
 	        loader.setController(loginController);
 	        primaryStage.setScene(scene);
+	        primaryStage.setOnCloseRequest(event -> {
+	            System.out.println("User is closing the window!");
+	            client.write("close-connect");
+	        });
 	        primaryStage.show();
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println(e);
 			System.out.println(e);
+			try {
+				stop();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 		
     }

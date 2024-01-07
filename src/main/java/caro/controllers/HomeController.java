@@ -41,6 +41,13 @@ import javafx.util.Duration;
 
 public class HomeController extends BaseController implements Initializable{
 	private Alert alert;
+	public Alert getAlert() {
+		return alert;
+	}
+	public void setAlert(Alert alert) {
+		this.alert = alert;
+	}
+
 	private Stage primaryStage;
 	@FXML
 	private Button btn_play_with_machine;
@@ -78,6 +85,18 @@ public class HomeController extends BaseController implements Initializable{
     @FXML
     private AnchorPane viewMessages;
     
+    @FXML
+    private Text numberGame;
+    
+    @FXML
+    private Text score;
+    
+    @FXML
+    private Text win;
+    
+    @FXML
+    private Text draw;
+    
     private Timeline timeline;
     
     private Player player;
@@ -113,6 +132,10 @@ public class HomeController extends BaseController implements Initializable{
 		this.client = client;
 		this.player = newplayer;
 		this.username.setText(player.getUsername());
+		this.numberGame.setText(player.getNumberOfGame()+"");
+		this.win.setText(player.getNumberOfWin()+"");
+		this.draw.setText(player.getNumberOfDraw()+"");
+		this.score.setText(player.getTotalScore()+"");
 		String messString = this.client.getServerMessage();
 	}
 	@FXML
@@ -157,7 +180,23 @@ public class HomeController extends BaseController implements Initializable{
 	
 	@FXML
     void showRankingWindow(MouseEvent event) throws IOException {
-		openModal("Ranking");
+		try {
+			Stage stage = new Stage();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/fxml/"+ "Ranking" + ".fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            RankingController rankingController = loader.getController();
+            rankingController.setup(client, player);
+            client.setRankingController(rankingController);
+            stage.setTitle("Ranking");
+            stage.initModality(Modality.APPLICATION_MODAL);
+			stage.setScene(scene);
+			stage.show();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
     }
 	
 	@FXML
@@ -170,19 +209,24 @@ public class HomeController extends BaseController implements Initializable{
             Parent root = loader.load();
             Scene scene = new Scene(root);
             BoardController boardController = loader.getController();
-            player.setPlaying(true);
+            client.getPlayer().setPlaying(true);
             boardController.setup(client, player);
             client.setBoardController(boardController);
             stage.setTitle("Board");
             stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setScene(scene);
+//			stage.setOnCloseRequest(e -> {
+//	            System.out.println("User is closing the window Board!");
+//	            client.getPlayer().setPlaying(false);
+//	            e.consume();
+//	        });
 			stage.show();
 		} catch (IOException e) {
 			System.out.println(e);
 		}
     }
 	
-    public void openBoardPlayerWindow(String rolePlay, String competitorId) {
+    public void openBoardPlayerWindow(String rolePlay, String competitorId, String competitorName) {
 //		openModal("Board");
 		Platform.runLater(()->{
 			try {
@@ -192,15 +236,20 @@ public class HomeController extends BaseController implements Initializable{
 	            Parent root = loader.load();
 	            Scene scene = new Scene(root);
 	            BoardPlayerController boardController = loader.getController();
-	            player.setPlaying(true);
+	            client.getPlayer().setPlaying(true);
 	            boardController.setRolePlay(rolePlay);
-	            boardController.setCompetitorId(Integer.parseInt(competitorId));
+	            boardController.setCompetitorId(Integer.parseInt(competitorId), competitorName);
 	            boardController.setup(client, player);
 	            client.setBoardPlayController(boardController);
 	            stage.setTitle("BoardPlayer");
 	            stage.initModality(Modality.APPLICATION_MODAL);
 				stage.setScene(scene);
 				stage.show();
+				stage.setOnCloseRequest(event -> {
+		            System.out.println("User is closing BoardPlayer window!");
+		            client.getPlayer().setPlaying(false);
+		            client.write("request-give-up,");
+		        });
 			} catch (IOException e) {
 				System.out.println(e);
 				e.printStackTrace();
@@ -210,18 +259,20 @@ public class HomeController extends BaseController implements Initializable{
 	
 	public void closeAlert() {
 		Platform.runLater(()->{
-			this.alert.close();
+			alert.close();
 		});
 		
 	}
 	@FXML
 	void openClock(ActionEvent event) {
+		
 	    String messageString = "match-making," + player.getId() + ",";
 	    client.write(messageString);
-
+	    
 //	    System.out.println(messageString);
-
 	    Platform.runLater(() -> {
+	    	client.getPlayer().setPlaying(true);
+			System.out.println(client.getPlayer().isPlaying());
 	        ProgressIndicator progressIndicator = new ProgressIndicator();
 	        // Create an Alert with custom content
 	        this.alert = new Alert(Alert.AlertType.INFORMATION);
@@ -235,18 +286,41 @@ public class HomeController extends BaseController implements Initializable{
 
 	        // Set the alert to not close on focus loss
 	        // alert.initOwner(null);
-
+	        
 	        Optional<ButtonType> option = alert.showAndWait();
-
 	        if (option.isPresent() && option.get() == cancer) {
 	        	String messCancerString = "cancer-making," + player.getId() + ",";
 	            client.write(messCancerString);
 //	            System.out.println(messCancerString);
-	            
+	            client.getPlayer().setPlaying(false);
 	        }
 	    });
 	}
 	
+	@FXML
+	void openDefyList(ActionEvent event) {
+		try {
+			Stage stage = new Stage();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/fxml/"+ "DefyList" + ".fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            DefyListController defyListController = loader.getController();
+            defyListController.setup(client, player);
+            client.setDefyListController(defyListController);
+            stage.setTitle("Defy list");
+            stage.initModality(Modality.APPLICATION_MODAL);
+//            stage.setOnCloseRequest(e -> {
+//	            System.out.println("User is closing the window BoardPlayer!");
+//	            client.write("end-game");
+//	        });
+			stage.setScene(scene);
+			stage.show();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+	}
 	
 	@FXML
     void openBoardPlayerWindow(ActionEvent event) {
@@ -263,6 +337,11 @@ public class HomeController extends BaseController implements Initializable{
             client.setBoardPlayController(boardPlayerController);
             stage.setTitle("Board");
             stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setOnCloseRequest(e -> {
+	            System.out.println("User is closing the window BoardPlayer!");
+	            client.getPlayer().setPlaying(false);
+//	            e.consume();
+	        });
 			stage.setScene(scene);
 			stage.show();
 		} catch (IOException e) {
@@ -272,7 +351,7 @@ public class HomeController extends BaseController implements Initializable{
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		
 	}
 	public void setPrimaryStage(Stage primaryStage2) {
 		// TODO Auto-generated method stub
@@ -291,10 +370,43 @@ public class HomeController extends BaseController implements Initializable{
 	        client.setLoginController(loginController);
 	        loginController.setup(client);
 	        primaryStage.show();
+	        client.write("logout,");
 		} catch (IOException e) {
 			// TODO: handle exception
 			System.out.println(e);
 		}
     }
+	
+	public void handleDefyResponse(String serverMessage) {
+		// TODO Auto-generated method stub
+		String serverMessageSplit[] = serverMessage.split(",");
+		if (client.getPlayer().isPlaying() == true) {
+			client.write("refuse-defy,"+serverMessageSplit[1]);
+		}
+		else {
+			Platform.runLater(()->{
+				alert = new Alert(AlertType.CONFIRMATION);
+		        alert.setTitle("Thông báo!");
+		        alert.setHeaderText(serverMessageSplit[2]+" thách đấu bạn!");
+		        alert.setContentText("Bạn có muốn chấp nhận!");
+		        ButtonType yesBtn = new ButtonType("Có");
+				ButtonType noBtn = new ButtonType("Không");
+				alert.getButtonTypes().clear();
+				alert.getButtonTypes().addAll(yesBtn, noBtn);
+				Optional<ButtonType> option = alert.showAndWait();
+				if (option.get()==yesBtn) {
+					System.out.println("btnOK");
+					client.write("accept-defy,"+serverMessageSplit[1]);
+				}
+				else if (option.get()==noBtn) {
+					client.write("refuse-defy,"+serverMessageSplit[1]);
+//					client.getPlayer().setPlaying(false);
+				}else {
+					alert.getOnCloseRequest();
+				}
+			});
+//			client.write("accept-defy,"+serverMessageSplit[1]);
+		}
+	}
 }
 

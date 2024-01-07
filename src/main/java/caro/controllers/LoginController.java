@@ -53,6 +53,7 @@ public class LoginController implements Initializable{
     public void initialize(URL location, ResourceBundle resources) {
     	emailField.setText("daominh");
     	passwordField.setText("1");
+    	
     }
     
     @FXML
@@ -138,9 +139,11 @@ public class LoginController implements Initializable{
 	    if (res[1].equals("OK")) {
 			this.player = new Player(Integer.valueOf(res[2]), res[3], res[4], Integer.valueOf(res[5]) , Integer.valueOf(res[6]), Integer.valueOf(res[7]),
 					Integer.valueOf(res[8]));
+			client.setPlayer(player);
 			Platform.runLater(()->{changeToHomePage();});
 		}
 		else {
+			warningField.setText(res[2]);
 			warningField.setVisible(true);
 		}
 		

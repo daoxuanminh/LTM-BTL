@@ -102,6 +102,7 @@ public class BoardController implements Initializable {
 	public void handleServerResponse(String serverResponse) {
 		String serverResponseSplit[] = serverResponse.split(",");
 		String header = serverResponseSplit[0];
+		client.getPlayer().setPlaying(true);
 		if (serverResponseSplit[2].compareTo("WIN!") == 0) {
 			Platform.runLater(()->{
 				Alert alert = new Alert(AlertType.INFORMATION);
@@ -121,6 +122,7 @@ public class BoardController implements Initializable {
 				
 				if (option.get()==noBtn) {
 					alert.close();
+					client.getPlayer().setPlaying(false);
 				}
 			});
 			
@@ -180,5 +182,7 @@ public class BoardController implements Initializable {
 			}
 		}
 	}
+
+	
 	
 }

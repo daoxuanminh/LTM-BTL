@@ -10,7 +10,7 @@ import service.*;
 
 public class PlayerService {
 
-    public void createPlayer(Player user) {
+    public int createPlayer(Player user) {
     	Connection connection = DB.getConnection();
         String query = "INSERT INTO user (email, password, username, numberOfGame, numberOfWin, " +
                 "numberOfDraw, totalScore) VALUES (?, ?, ?, 0, 0, 0, 0)";
@@ -25,9 +25,17 @@ public class PlayerService {
             if (generatedKeys.next()) {
                 user.setId(generatedKeys.getInt(1));
             }
-            
+            return 0; // thành công
         } catch (SQLException e) {
             e.printStackTrace();
+            System.out.println(e.getMessage());
+            if (e.getMessage().contains("email")) {
+				return 1;
+			}
+            else {
+				return 2;
+			}
+            
         }
     }
 
@@ -47,10 +55,31 @@ public class PlayerService {
         return null;
     }
 
-    public List<Player> getAllPlayers() {
+    public void updateMatch(Player winner, Player losser) {
+    	Connection connection = DB.getConnection();
+
+        String query = "UPDATE user SET totalScore = ?, numberOfGame = ?, numberOfDraw = ?, numberOfWin = ? WHERE email = ? AND username = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, winner.getTotalScore());
+            preparedStatement.setInt(2, winner.getNumberOfGame());
+            preparedStatement.setInt(3, winner.getNumberOfDraw());
+            preparedStatement.setInt(4, winner.getNumberOfWin());
+            preparedStatement.setString(5, winner.getEmail());
+            preparedStatement.setString(6, winner.getUsername());
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+    }
+    
+    public List<Player> getTopPlayers() {
     	Connection connection = DB.getConnection();
         List<Player> users = new ArrayList<>();
-        String query = "SELECT * FROM user";
+        String query = "SELECT * FROM user "
+        		+ "ORDER BY totalScore DESC "
+        		+ "LIMIT 100;";
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
             while (resultSet.next()) {

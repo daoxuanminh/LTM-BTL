@@ -1,31 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
-<AnchorPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="caro.controllers.RankingController">
+<AnchorPane scaleShape="false" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="caro.controllers.RankingController">
    <children>
       <VBox>
       
                 <TableView fx:id="rankingTable" editable="true" prefHeight="400.0" prefWidth="506.0">
               <columns>
-                  <TableColumn text="Ranking">
+                  <TableColumn fx:id="stt" text="Ranking">
                       <cellValueFactory>
                           <PropertyValueFactory property="ranking" />
                       </cellValueFactory>
                   </TableColumn>
-                  <TableColumn text="Player Name">
+                  <TableColumn fx:id="username" text="Player Name">
                       <cellValueFactory>
                           <PropertyValueFactory property="playerName" />
                       </cellValueFactory>
                   </TableColumn>
-                  <TableColumn text="Score">
+                  <TableColumn fx:id="score" text="Score">
                       <cellValueFactory>
                           <PropertyValueFactory property="score" />
                       </cellValueFactory>
@@ -35,15 +32,6 @@
                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
             </columnResizePolicy>
           </TableView>
-         <HBox prefHeight="100.0" prefWidth="200.0">
-            <children>
-            
-                      <Label text="Your Information" />
-                <Label text="Ranking: {yourRanking}" />
-                <Label text="Player Name: {yourPlayerName}" />
-                <Label text="Score: {yourScore}" />
-            </children>
-         </HBox>
       
       </VBox>
    </children>

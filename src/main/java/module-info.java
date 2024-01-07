@@ -9,4 +9,5 @@ module ltm {
     opens caro to javafx.fxml;
     exports caro;
     opens caro.controllers;
+    opens caro.player;
 }

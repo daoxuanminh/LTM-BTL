@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import caro.Client;
+import caro.player.Player;
 import service.PlayerService;
 import service.DB;
 
@@ -64,11 +65,23 @@ public class ServerThreadBus {
     public void sendOnlineList(){
         String res = "";
         List<ServerThread> threadbus = Server.serverThreadBus.getListServerThreads();
-        for(ServerThread serverThread : threadbus){
-            res += serverThread.getClientNumber()+"-";
+        for(Player item : Server.listClientOnline){
+            res += "update-online-list,"+item.getId()+","+ item+";";
         }
-//        Server.serverThreadBus.mutilCastSend("update-online-list"+","+res);
+        Server.serverThreadBus.mutilCastSend(res);
     }
+    
+    public void sendRankingList(){
+    	String res = "";
+        int stt = 1;
+        List<ServerThread> threadbus = Server.serverThreadBus.getListServerThreads();
+        for(Player item : Server.listRanking){
+            res += "ranking-list,"+stt+","+ item+";";
+            stt++;
+        }
+        Server.serverThreadBus.mutilCastSend(res);
+    }
+    
     public void sendMessageToPersion(int id, String headerStatus, String message ){
         for(ServerThread serverThread : Server.serverThreadBus.getListServerThreads()){
             if(serverThread.getClientNumber()==id){
@@ -127,5 +140,19 @@ public class ServerThreadBus {
 	
 	public void deleteListClientWaitPlay(ServerThread clientCancerPlay) {
 		this.listClientWaitPlay.stream().filter(client -> client.getClientNumber() != clientCancerPlay.getClientNumber());
+	}
+
+	public void mutilCastSendOnlineList(String header ,Player user, int clientNumber) {
+		// TODO Auto-generated method stub
+		for(ServerThread serverThread : Server.serverThreadBus.getListServerThreads()){
+            try {
+            	if (serverThread.getClientNumber() == clientNumber) {
+					continue;
+				}
+                serverThread.write(header+clientNumber+","+user.getEmail()+","+user.getUsername()+","+user.getNumberOfGame()+","+user.getNumberOfWin()+","+user.getNumberOfDraw()+","+user.getTotalScore());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
 	}
 }

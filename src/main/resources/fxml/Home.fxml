@@ -62,7 +62,7 @@
                      <padding>
                         <Insets bottom="6.0" top="6.0" />
                      </padding></Button>
-                  <Button fx:id="btn_defy" mnemonicParsing="false" prefHeight="25.0" prefWidth="229.0" text="Thách đấu">
+                  <Button fx:id="btn_defy" mnemonicParsing="false" onAction="#openDefyList" prefHeight="25.0" prefWidth="229.0" text="Thách đấu">
                      <padding>
                         <Insets bottom="6.0" top="6.0" />
                      </padding></Button>
@@ -98,7 +98,7 @@
       </Pane>
       <VBox alignment="TOP_CENTER" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="171.0">
          <children>
-            <ImageView fitHeight="167.0" fitWidth="176.0" onMouseClicked="#showRankingWindow" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="167.0" fitWidth="176.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../img/62681-flat-icons-face-computer-design-avatar-icon-thumb.png" />
                </image>
@@ -108,6 +108,33 @@
                   <Font size="18.0" />
                </font>
             </Text>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Số trận: " />
+                  <Text fx:id="numberGame" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+               </children>
+               <VBox.margin>
+                  <Insets top="20.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Thắng: " />
+                  <Text fx:id="win" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Hòa: " />
+                  <Text fx:id="draw" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Tổng điểm: " />
+                  <Text fx:id="score" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+               </children>
+            </HBox>
          </children>
       </VBox>
    </children>

@@ -9,12 +9,14 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import caro.player.Player;
 import service.DB;
 import service.PlayerService;
 
@@ -26,7 +28,10 @@ public class Server {
 
     public static volatile ServerThreadBus serverThreadBus;
     public static Socket socketOfServer;
-    public static LinkedList<String> listClientIdWaite = new LinkedList<String>();
+    public static LinkedList<Player> listClientIdWaite = new LinkedList<Player>();
+    public static LinkedList<Player> listClientOnline = new LinkedList<Player>();
+	public static List<Player> listRanking = new ArrayList<Player>();
+    
     
     
     public static void main(String[] args) {
@@ -48,7 +53,7 @@ public class Server {
         ThreadPoolExecutor executor = new ThreadPoolExecutor(
                 100, // corePoolSize
                 100, // maximumPoolSize
-                100, // thread timeout
+                10, // thread timeout
                 TimeUnit.SECONDS,
                 new ArrayBlockingQueue<>(8) // queueCapacity
         );
@@ -68,6 +73,7 @@ public class Server {
         } finally {
             try {
                 listener.close();
+                System.out.println("closed connect");
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

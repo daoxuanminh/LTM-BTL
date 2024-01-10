@@ -196,6 +196,7 @@ public class Client implements Runnable {
         } catch (IOException e) {
         	try {
 				socket.close();
+				homeController.openAlertDisconnect();
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

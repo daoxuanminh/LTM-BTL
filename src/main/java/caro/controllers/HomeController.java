@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import caro.player.Player;
-import caro.room.Room;
 import caro.Client;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -102,8 +101,6 @@ public class HomeController extends BaseController implements Initializable{
     private Player player;
     
     private Client client;
-    
-    private ArrayList<Room> listRoom;
     
     private String messRecive;
     
@@ -407,6 +404,24 @@ public class HomeController extends BaseController implements Initializable{
 			});
 //			client.write("accept-defy,"+serverMessageSplit[1]);
 		}
+	}
+	public void openAlertDisconnect() {
+		// TODO Auto-generated method stub
+		Platform.runLater(() -> {
+	    	client.getPlayer().setPlaying(true);
+			System.out.println(client.getPlayer().isPlaying());
+	        ProgressIndicator progressIndicator = new ProgressIndicator();
+	        // Create an Alert with custom content
+	        this.alert = new Alert(Alert.AlertType.INFORMATION);
+	        alert.setTitle("Thông báo");
+	        alert.setHeaderText("Mất kết nối đến Server!");
+	        alert.setContentText("Đang khắc phục sự cố!");
+	        alert.setGraphic(progressIndicator);
+	        alert.getButtonTypes().clear();
+	        ButtonType okButtonType = new ButtonType("OK");
+	        alert.getButtonTypes().add(okButtonType);
+	        alert.showAndWait();
+		});
 	}
 }
 

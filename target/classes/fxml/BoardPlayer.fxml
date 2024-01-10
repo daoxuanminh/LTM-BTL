@@ -70,9 +70,9 @@
                            <children>
                               <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                                  <children>
-                                    <Text fx:id="myName" strokeType="OUTSIDE" strokeWidth="0.0" text="UserName">
+                                    <Text fx:id="myName" strokeType="OUTSIDE" strokeWidth="0.0" text="Đào Xuân Minh" textAlignment="CENTER">
                                        <font>
-                                          <Font size="18.0" />
+                                          <Font size="14.0" />
                                        </font>
                                     </Text>
                                     <Text fx:id="userRolePlay" fill="#e00f07" strokeType="OUTSIDE" strokeWidth="0.0" text="X">
@@ -84,9 +84,9 @@
                               </VBox>
                               <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                                  <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Competitor" wrappingWidth="100.5537109375">
+                                    <Text fx:id="competitorName" strokeType="OUTSIDE" strokeWidth="0.0" text="Quang" textAlignment="CENTER" wrappingWidth="100.5537109375">
                                        <font>
-                                          <Font size="18.0" />
+                                          <Font size="14.0" />
                                        </font>
                                     </Text>
                                     <Text fx:id="competitorRole" fill="#1b8d30" strokeType="OUTSIDE" strokeWidth="0.0" text="O">

@@ -147,7 +147,7 @@ public class Client implements Runnable {
                 		homeController.handleDefyResponse(serverMessage);
 					}
 				}
-                if (serverMessageSplit[0].compareTo("cancer-defy") == 0) {
+                if (serverMessageSplit[0].compareTo("cancel-defy") == 0) {
 					homeController.getAlert().getOnCloseRequest();
 					
 				}

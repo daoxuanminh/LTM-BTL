@@ -26,7 +26,7 @@ import service.PlayerService;
  */
 public class Server {
 
-    public static volatile ServerThreadBus serverThreadBus;
+    public static volatile ServerThreadService serverThreadService;
     public static Socket socketOfServer;
     public static LinkedList<Player> listClientIdWaite = new LinkedList<Player>();
     public static LinkedList<Player> listClientOnline = new LinkedList<Player>();
@@ -37,7 +37,7 @@ public class Server {
     public static void main(String[] args) {
 //    	Connection connection = DB.getConnection();
         ServerSocket listener = null;
-        serverThreadBus = new ServerThreadBus();
+        serverThreadService = new ServerThreadService();
         System.out.println("Server is waiting to accept user...");
         int clientNumber = 0;
 
@@ -63,8 +63,8 @@ public class Server {
                 // Đồng thời nhận được một đối tượng Socket tại server.
                 socketOfServer = listener.accept();
                 ServerThread serverThread = new ServerThread(socketOfServer, clientNumber++);
-                serverThreadBus.add(serverThread);
-                System.out.println("Số thread đang chạy là: "+serverThreadBus.getLength());
+                serverThreadService.add(serverThread);
+                System.out.println("Số thread đang chạy là: "+serverThreadService.getLength());
                 executor.execute(serverThread);
                 
             }

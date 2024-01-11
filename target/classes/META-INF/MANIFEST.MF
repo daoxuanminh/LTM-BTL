@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Built-By: DaoMinh
-Build-Jdk: 19
-Main-Class: caro.MainApp
-Created-By: Maven Integration for Eclipse
-

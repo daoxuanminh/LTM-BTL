@@ -98,11 +98,11 @@ public class DefyListController implements Initializable{
                 	        alert.setContentText("Vui lòng chờ trong giây lát!");
                 	        alert.setGraphic(progressIndicator);
                 	        alert.getButtonTypes().clear();
-                	        ButtonType cancerButtonType = new ButtonType("Hủy");
-                	        alert.getButtonTypes().add(cancerButtonType);
+                	        ButtonType cancelButtonType = new ButtonType("Hủy");
+                	        alert.getButtonTypes().add(cancelButtonType);
                 	        Optional<ButtonType> option = alert.showAndWait();
-                	        if(option.get().equals(cancerButtonType)) {
-                	        	client.write("cancer-defy,"+data.getId());
+                	        if(option.get().equals(cancelButtonType)) {
+                	        	client.write("cancel-defy,"+data.getId());
                 	        }
                 	        
                         });

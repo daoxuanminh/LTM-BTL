@@ -21,20 +21,7 @@ public class Player {
 	 	this.numberOfDraw = Integer.valueOf(res[6]);
 	 	this.totalScore = Integer.valueOf(res[7]);
 	}
-	public Player(int id, String email, String username, String password, int numberOfGame, int numberOfWin,
-			int numberOfDraw, boolean isOline, boolean isPlaying, int totalScore) {
-		super();
-		this.id = id;
-		this.email = email;
-		this.username = username;
-		this.password = password;
-		this.numberOfGame = numberOfGame;
-		this.numberOfWin = numberOfWin;
-		this.numberOfDraw = numberOfDraw;
-		this.isOline = isOline;
-		this.isPlaying = isPlaying;
-		this.totalScore = totalScore;
-	}
+	
 
 
 	public Player(int id, String email, String username, int numberOfGame, int numberOfWin, int numberOfDraw,
@@ -60,30 +47,13 @@ public class Player {
 		this.totalScore = totalScore;
 	}
 	
-	public Player(String username, String email, String password, int numberOfGame, int numberOfWin, int numberOfDraw, boolean isOline, boolean isPlaying, int totalScore) {
-		super();
-		this.username = username;
-		this.email = email;
-		this.password = password;
-		this.numberOfGame = numberOfGame;
-		this.numberOfWin = numberOfWin;
-		this.numberOfDraw = numberOfDraw;
-		this.isOline = isOline;
-		this.isPlaying = isPlaying;
-		this.totalScore = totalScore;
-	}
+	
 	
 	public Player(String username, String email, String password) {
 		super();
 		this.username = username;
 		this.email = email;
 		this.password = password;
-		this.numberOfGame = 0;
-		this.numberOfWin = 0;
-		this.numberOfDraw = 0;
-		this.isOline = true;
-		this.isPlaying = false;
-		this.totalScore = 0;
 	}
 	
 	

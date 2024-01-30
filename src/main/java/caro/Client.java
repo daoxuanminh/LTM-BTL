@@ -147,6 +147,11 @@ public class Client implements Runnable {
                 		homeController.handleDefyResponse(serverMessage);
 					}
 				}
+                if (serverMessageSplit[0].compareTo("update-user") == 0) {
+                	if (homeController != null) {
+                		homeController.updatePlayer(serverMessage);
+					}
+				}
                 if (serverMessageSplit[0].compareTo("cancel-defy") == 0) {
 					homeController.getAlert().getOnCloseRequest();
 					

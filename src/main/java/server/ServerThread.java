@@ -465,6 +465,15 @@ public class ServerThread implements Runnable {
 						System.out.println(e);
 					}
             	} 
+                if (messageSplit[0].compareTo("update-user") == 0) {
+            		try {
+            			Server.serverThreadService.sendMessageToPerson(clientNumber,"update-user,OK",clientNumber+","+user.getEmail()+","+user.getUsername()+","+user.getNumberOfGame()+","+user.getNumberOfWin()+","+user.getNumberOfDraw()+","+user.getTotalScore());
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						System.out.println(e);
+					}
+            	}
                 if (messageSplit[0].compareTo("cancel-defy") == 0) {
             		try {
             			String idString = messageSplit[1];

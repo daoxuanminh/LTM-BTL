@@ -248,10 +248,11 @@ public class HomeController extends BaseController implements Initializable {
 				stage.initModality(Modality.APPLICATION_MODAL);
 				stage.setScene(scene);
 				stage.show();
-				stage.setOnCloseRequest(event -> {
-					System.out.println("User is closing BoardPlayer window!");
+				stage.setOnCloseRequest(e -> {
+					System.out.println("User is closing the window BoardPlayer!");
 					client.getPlayer().setPlaying(false);
-					client.write("request-give-up,");
+					client.write("update-user");
+					// e.consume();
 				});
 			} catch (IOException e) {
 				System.out.println(e);
@@ -290,6 +291,12 @@ public class HomeController extends BaseController implements Initializable {
 
 			// Set the alert to not close on focus loss
 			// alert.initOwner(null);
+			alert.setOnCloseRequest(e->{
+				String messCancelString = "cancel-making," + player.getId() + ",";
+				client.write(messCancelString);
+				// System.out.println(messCancelString);
+				client.getPlayer().setPlaying(false);
+			});
 
 			Optional<ButtonType> option = alert.showAndWait();
 			if (option.isPresent() && option.get() == cancel) {
@@ -344,6 +351,7 @@ public class HomeController extends BaseController implements Initializable {
 			stage.setOnCloseRequest(e -> {
 				System.out.println("User is closing the window BoardPlayer!");
 				client.getPlayer().setPlaying(false);
+				client.write("update-user");
 				// e.consume();
 			});
 			stage.setScene(scene);
@@ -429,5 +437,18 @@ public class HomeController extends BaseController implements Initializable {
 			alert.getButtonTypes().add(okButtonType);
 			alert.showAndWait();
 		});
+	}
+
+	public void updatePlayer(String serverMessage) {
+		// TODO Auto-generated method stub
+		String res[] = serverMessage.split(",");
+		this.player = new Player(Integer.valueOf(res[2]), res[3], res[4], Integer.valueOf(res[5]) , Integer.valueOf(res[6]), Integer.valueOf(res[7]),
+				Integer.valueOf(res[8]));
+		client.setPlayer(player);
+		this.username.setText(player.getUsername());
+		this.numberGame.setText(player.getNumberOfGame() + "");
+		this.win.setText(player.getNumberOfWin() + "");
+		this.draw.setText(player.getNumberOfDraw() + "");
+		this.score.setText(player.getTotalScore() + "");
 	}
 }
